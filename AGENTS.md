@@ -2,11 +2,12 @@
 
 - Create a work plan and todo list before starting a task, and start work after user confirmation (using human-in-the-loop tool)
 
-Example
+  ```Example
 
-Work Policy: "Work Policy" Todo 1.
+  Work Policy: "Work Policy" Todo 1.
 
-Todo 1. "Specific task 1"\n 2. "Specific task 2"\n 3. "Specific task 3"
+  Todo 1. "Specific task 1"\n 2. "Specific task 2"\n 3. "Specific task 3"
+  ```
 
 - Check with users if anything is unclear (use human-in-the-loop tool)
 
@@ -15,17 +16,15 @@ Todo 1. "Specific task 1"\n 2. "Specific task 2"\n 3. "Specific task 3"
 - Whenever modifying or changing a feature, design it before implementation.
 
 - Strategic use of the `/serena` command for token efficient and structured problem solving. Create applications, components, APIs, systems and tests with maximum efficiency.
+
 - Think in English, answer in Japanese.
 
 ### Development Principles
 
-1. **YAGNI**: Do not implement features that may not be used in the future. 2.
-
-2. **DRY**: Always make duplicated code into functions or modules. 3.
-
-**KISS**: Prefer simple solutions to complex solutions 4.
-
-**KISS**: Do not do anything other than what you are told to do, and do not implement anything unnecessary.
+1. **YAGNI**: Do not implement features that may not be used in the future.
+2. **DRY**: Always make duplicated code into functions or modules.
+3. **KISS**: Prefer simple solutions to complex solutions
+4. Do not do anything other than what you are told to do, and do not implement anything unnecessary.
 
 ### Work Reporting Rules
 
