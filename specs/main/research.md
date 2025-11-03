@@ -8,6 +8,10 @@
   - モデル選択は `/model <name>`（対話）／環境変数（例: GH_TOKEN/GITHUB_TOKEN）での認証を確認。
   - 非対話実行は公式に明示されていないため、実装で検出し TTY にフォールバックする方針が安全。
 
+## Libraries
+
+- Validation: Zod（ツール入力および `config/models.json` のスキーマ検証）
+
 ## Decisions (Final)
 
 1) MCP フレームワーク
@@ -24,6 +28,11 @@
 - Decision: ルート `config/models.json` に列挙。MCP はこのコンフィグで検証し、不一致は拒否。契約(JSON Schema)の enum は現状スナップショットとして併記。
 - Rationale: 将来のモデル追加をコンフィグで完結。
 - Alternatives: コード直書き（変更コスト高）。
+
+3b) スキーマ検証
+- Decision: Zod を用い、`models.json` の形（{ models: string[] }）とツール入力（input, model）を実行時検証。
+- Rationale: 型安全と実運用時の防御（invalid_request/invalid_config）を一貫提供。
+- Alternatives: JSON Schema ランタイム検証のみ（既存エコシステムはあるが、TS 開発体験は Zod が良好）。
 
 4) エラー分類
 - Decision: 型付きエラーに正規化: `not_installed`, `not_logged_in`, `timeout`, `nonzero_exit`, `rate_limited`, `tty_unavailable`, `unknown_option`。

@@ -13,15 +13,30 @@
   "license": "ISC",
   "author": "",
   "type": "commonjs",
-  "main": "index.js",
+  "main": "dist/src/server.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest",
+    "coverage": "vitest --coverage"
   },
   "dependencies": {
+    "child_process": "^1.0.2",
+    "fastmcp": "*",
+    "fs": "^0.0.1-security",
+    "path": "^0.12.7",
     "zod": "^3.23.8"
+  },
+  "optionalDependencies": {
+    "node-pty": "*"
   },
   "devDependencies": {
     "@types/node": "^24.9.2",
-    "typescript": "^5.9.3"
+    "c8": "*",
+    "typescript": "^5.9.3",
+    "vitest": "*"
+  },
+  "engines": {
+    "node": ">=18"
   }
 }
