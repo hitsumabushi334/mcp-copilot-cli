@@ -31,7 +31,13 @@
 
 *GATE: Must pass before Phase 0 research. Re-check after Phase 1 design.*
 
-[Gates determined based on constitution file]
+The following gates are MANDATORY per constitution:
+- Readability: Single-responsibility, DRY/KISS, clear naming; no dead code
+- Type-safety: `tsc --noEmit` passes with zero errors
+- Tests: Unit/integration tests exist for changes; coverage ≥ 80% (lines/branches)
+- Performance: Define SLI/SLO + budgets in this plan; no known regressions
+- Dependencies: New deps include evaluation (security/size/maintenance)
+- Waivers: Any exception includes written rationale and owner
 
 ## Project Structure
 

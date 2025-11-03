@@ -1,0 +1,21 @@
+# Code Style & Conventions
+
+- TypeScript compiler options (evidence from `tsconfig.json`):
+  - `strict: true`
+  - `noUncheckedIndexedAccess: true`
+  - `exactOptionalPropertyTypes: true`
+  - `isolatedModules: true`
+  - `verbatimModuleSyntax: true`
+  - `module: esnext`, `target: es2020`, `moduleResolution: node`, `moduleDetection: force`
+  - `sourceMap: true`, `declaration: true`, `declarationMap: true`
+- Source layout:
+  - `include: src/**/*.ts`
+  - `outDir: dist`
+- Module system note:
+  - package.json は `type: commonjs` だが tsconfig は `module: esnext`。CJS/ESM の統一が必要（要方針決定）。
+- Naming & docs:
+  - 本リポジトリに命名規約/Docstring 規約の明示は未確認。一般的な TS 慣例（PascalCase: 型/クラス、camelCase: 変数/関数）を想定。
+- Lint/Format:
+  - ESLint/Prettier 等の設定は未検出。導入未定。
+- 作業原則:
+  - `AGENTS.md` の YAGNI/DRY/KISS、事前設計→最小実装、作業完了報告フォーマットを遵守。

@@ -1,0 +1,49 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.com/mcp/copilot.chat.schema.json",
+  "title": "MCP Tool: copilot.chat",
+  "type": "object",
+  "properties": {
+    "input": { "type": "string", "minLength": 1, "maxLength": 10000 },
+    "model": {
+      "type": "string",
+      "description": "Whitelisted model name",
+      "enum": ["claude-sonnet-4", "claude-sonnet-4.5", "gpt5"]
+    }
+  },
+  "required": ["input"],
+  "additionalProperties": false,
+  "x-mcp": {
+    "tool": "copilot.chat",
+    "execution": {
+      "mode": "auto",
+      "nonInteractive": {
+        "command": "copilot",
+        "argsTemplate": ["-p", "${input}"],
+        "modelFlag": "--model",
+        "stdio": "pipe"
+      },
+      "interactiveFallback": {
+        "command": "copilot",
+        "stdio": "tty",
+        "pty": true,
+        "prelude": ["/model ${model}"]
+      },
+      "spawn": "per-request",
+      "whitelistOptions": ["model"],
+      "output": {
+        "format": "raw",
+        "fields": ["stdout", "stderr", "exitCode"]
+      },
+      "errors": [
+        "not_installed",
+        "not_logged_in",
+        "timeout",
+        "nonzero_exit",
+        "rate_limited",
+        "tty_unavailable"
+      ],
+      "timeoutSec": { "nonInteractive": 30, "interactive": 30 }
+    }
+  }
+}
