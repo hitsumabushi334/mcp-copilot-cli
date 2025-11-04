@@ -15,7 +15,7 @@
 
 - Whenever modifying or changing a feature, design it before implementation.
 
-- Strategic use of the `/serena` command for token efficient and structured problem solving. Create applications, components, APIs, systems and tests with maximum efficiency.
+- Strategic use of the `serena_mcp` command for token efficient and structured problem solving. Create applications, components, APIs, systems and tests with maximum efficiency.
 
 - Think in English, answer in Japanese.
 

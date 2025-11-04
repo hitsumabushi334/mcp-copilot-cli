@@ -1,4 +1,6 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
+import * as processLib from '../../src/lib/process';
+import { copilotChat } from '../../src/tools/copilotChat';
 import { loadModelsConfig, makeInputSchema } from '../../src/tools/copilotChat.schema';
 
 describe('copilotChat.schema', () => {
@@ -27,3 +29,22 @@ describe('copilotChat.schema', () => {
   });
 });
 
+
+// US2: Fallback to TTY when unknown option is returned
+describe('copilotChat fallback (TTY)', () => {
+  it('falls back to spawnPty with /model and input when unknown option occurs', async () => {
+    const cmdSpy = vi.spyOn(processLib, 'spawnCommand').mockResolvedValue({ stdout: '', stderr: 'unknown option: --model', exitCode: 1 });
+    const ptySpy = vi.spyOn(processLib, 'spawnPty').mockResolvedValue({ stdout: 'TTY_OK', stderr: '', exitCode: 0 });
+
+    const res = await copilotChat({ input: 'Hello', model: 'claude-sonnet-4' });
+
+    expect(cmdSpy).toHaveBeenCalled();
+    expect(ptySpy).toHaveBeenCalled();
+    const args = (cmdSpy as any).mock.calls[0][1];
+    expect(args).toEqual(['-p', 'Hello', '--model', 'claude-sonnet-4']);
+    const prelude = (ptySpy as any).mock.calls[0][1];
+    expect(prelude).toEqual(['/model claude-sonnet-4', 'Hello']);
+    expect(res.exitCode).toBe(0);
+    expect(res.stdout).toContain('TTY_OK');
+  });
+});

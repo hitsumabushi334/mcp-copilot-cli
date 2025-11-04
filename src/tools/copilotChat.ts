@@ -1,4 +1,4 @@
-import { spawnCommand } from "../lib/process";
+import { spawnCommand, spawnPty } from "../lib/process";
 import {
   loadModelsConfig,
   makeInputSchema,
@@ -24,7 +24,15 @@ export async function copilotChat(
     args.push("--model", parsed.model);
   }
   // 30s timeout per spec (US1 scope)
-  return await spawnCommand("copilot", args, 30_000);
+  const first = await spawnCommand("copilot", args, 30_000);
+  // US2: Fallback to TTY when CLI rejects options (e.g., "unknown option")
+  if (first.exitCode !== 0 && /unknown option/i.test(first.stderr)) {
+    const prelude: string[] = [];
+    if (parsed.model) prelude.push(`/model ${parsed.model}`);
+    prelude.push(parsed.input);
+    return await spawnPty("copilot", prelude, 30_000);
+  }
+  return first;
 }
 
 export default copilotChat;

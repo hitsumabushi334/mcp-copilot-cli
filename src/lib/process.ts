@@ -1,4 +1,5 @@
 import { spawn, type ChildProcess } from 'child_process';
+import { ptySpawn } from './pty';
 
 export type ErrorType =
   | 'not_installed'
@@ -64,5 +65,59 @@ export function spawnCommand(
   });
 }
 
-// spawnPty will be added in US2
+export function spawnPty(
+  command: string,
+  prelude: string[],
+  timeoutMs: number,
+): Promise<RunResult> {
+  return new Promise<RunResult>((resolve) => {
+    let settled = false;
+    let stdout = '';
+    let timer: ReturnType<typeof setTimeout> | undefined;
+
+    const settle = (result: RunResult) => {
+      if (settled) return;
+      settled = true;
+      if (timer) clearTimeout(timer);
+      resolve(result);
+    };
+
+    let pty: any;
+    try {
+      pty = ptySpawn(command, [], {
+        name: 'xterm-color',
+        cols: 80,
+        rows: 24,
+        cwd: process.cwd(),
+        env: process.env,
+      });
+    } catch (err: any) {
+      return settle({ stdout: '', stderr: String(err?.message ?? err), exitCode: -1 });
+    }
+
+    try {
+      for (const line of prelude) {
+        // Send line followed by Enter
+        pty.write(String(line) + '\r');
+      }
+    } catch {
+      // ignore write errors; exit handler will settle
+    }
+
+    pty.onData?.((data: string) => {
+      stdout += String(data ?? '');
+    });
+
+    pty.onExit?.((ev: { exitCode?: number } | number) => {
+      if (settled) return;
+      const code = typeof ev === 'number' ? ev : (ev?.exitCode ?? 0);
+      settle({ stdout, stderr: '', exitCode: code });
+    });
+
+    timer = setTimeout(() => {
+      try { pty?.kill?.(); } catch { /* ignore */ }
+      settle({ stdout, stderr: '', exitCode: -1, errorType: 'timeout' });
+    }, timeoutMs);
+  });
+}
 

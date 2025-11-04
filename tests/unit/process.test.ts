@@ -94,3 +94,60 @@ describe("spawnCommand (non-interactive)", () => {
     expect(res.exitCode).toBe(-1);
   });
 });
+
+// US2: PTY runner tests
+describe("spawnPty (interactive)", () => {
+  beforeEach(() => {
+    vi.useFakeTimers();
+    ptySpawnMock.mockReset();
+  });
+  afterEach(() => {
+    vi.useRealTimers();
+    vi.clearAllMocks();
+  });
+
+  it("writes prelude lines and resolves on exit", async () => {
+    const writes: string[] = [];
+    ptySpawnMock.mockImplementation(() => {
+      const pty: any = {
+        onDataCb: undefined as undefined | ((d: string) => void),
+        onExitCb: undefined as undefined | ((e: { exitCode?: number }) => void),
+        write: vi.fn((s: string) => { writes.push(s); }),
+        kill: vi.fn(),
+        onData(cb: (d: string) => void) { this.onDataCb = cb; },
+        onExit(cb: (e: { exitCode?: number }) => void) { this.onExitCb = cb; },
+      };
+      // simulate async data and exit
+      setTimeout(() => {
+        pty.onDataCb?.("OK");
+        pty.onExitCb?.({ exitCode: 0 });
+      }, 1);
+      return pty;
+    });
+    const mod = await import("../../src/lib/process");
+    const p = mod.spawnPty("copilot", ["/model claude", "Hello"], 1000);
+    vi.advanceTimersByTime(5);
+    const res = await p;
+
+    expect(ptySpawnMock).toHaveBeenCalled();
+    expect(writes).toEqual(["/model claude\r", "Hello\r"]);
+    expect(res.exitCode).toBe(0);
+    expect(res.stdout).toContain("OK");
+  });
+
+  it("returns timeout when no exit", async () => {
+    const ptyRef: any = { kill: vi.fn(), onData() {}, onExit() {}, write() {} };
+    ptySpawnMock.mockImplementation(() => ptyRef);
+    const mod = await import("../../src/lib/process");
+    const p = mod.spawnPty("copilot", [], 10);
+    vi.advanceTimersByTime(11);
+    const res = await p;
+    expect(res.errorType).toBe("timeout");
+    expect(ptyRef.kill).toHaveBeenCalled();
+    expect(res.exitCode).toBe(-1);
+  });
+});
+
+// Hoisted mock for pty wrapper used by spawnPty tests
+const ptySpawnMock = vi.fn();
+vi.mock("../../src/lib/pty", () => ({ ptySpawn: (...args: any[]) => ptySpawnMock(...args) }));
