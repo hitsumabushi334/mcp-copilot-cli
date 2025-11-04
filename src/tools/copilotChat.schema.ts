@@ -1,6 +1,6 @@
-import { readFileSync } from 'fs';
-import { join } from 'path';
-import { z } from 'zod';
+import { readFileSync } from "fs";
+import { join } from "path";
+import { z } from "zod";
 
 export const ModelsConfigSchema = z.object({
   models: z.array(z.string().min(1)).min(1),
@@ -8,8 +8,8 @@ export const ModelsConfigSchema = z.object({
 export type ModelsConfig = z.infer<typeof ModelsConfigSchema>;
 
 export function loadModelsConfig(cwd: string = process.cwd()): ModelsConfig {
-  const p = join(cwd, 'config', 'models.json');
-  const raw = readFileSync(p, 'utf8');
+  const p = join(cwd, "config", "models.json");
+  const raw = readFileSync(p, "utf8");
   const json = JSON.parse(raw);
   return ModelsConfigSchema.parse(json);
 }
