@@ -21,10 +21,7 @@
     "coverage": "vitest --coverage"
   },
   "dependencies": {
-    "child_process": "^1.0.2",
     "fastmcp": "*",
-    "fs": "^0.0.1-security",
-    "path": "^0.12.7",
     "zod": "^3.23.8"
   },
   "optionalDependencies": {
